@@ -21,7 +21,7 @@ import {
 } from "@/services/booking-api";
 import { validateCoupon } from "@/services/offer-rate-api";
 import Alert from "@/components/ui/alert";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 type PaymentPlan =
   | "full"
@@ -279,15 +279,15 @@ export default function SpecialBookingsPage() {
     setIsLoadingSlots,
   ] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const dayendData = localStorage.getItem("dayEndData") ? JSON.parse(localStorage.getItem("dayEndData") as string) : null;
+  // const dayendData = localStorage.getItem("dayEndData") ? JSON.parse(localStorage.getItem("dayEndData") as string) : null;
 
-  useEffect(() => {
-    if (!dayendData) {
-      navigate("/dayend");
-    }
-  }, [dayendData]);
+  // useEffect(() => {
+  //   if (!dayendData) {
+  //     navigate("/dayend");
+  //   }
+  // }, [dayendData]);
 
   const occurrenceCount =
     useMemo(() => {
@@ -1269,8 +1269,9 @@ export default function SpecialBookingsPage() {
           HEADER
       ================================================== */}
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
           Special Bookings
         </h1>
 
@@ -1279,6 +1280,19 @@ export default function SpecialBookingsPage() {
           court bookings for multiple
           days and time slots.
         </p>
+        </div>
+        
+
+         {/* <button
+          type="button"
+          onClick={() =>
+            navigate("/special-bookings-availability")
+          }
+          className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+        >
+          <ArrowRight size={16} />
+          Available Bookings
+        </button> */}
       </div>
 
       {/* =================================================
