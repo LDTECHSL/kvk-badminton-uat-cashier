@@ -24,8 +24,6 @@ interface SlotAvailability {
   isBooked: boolean;
 }
 
-const SLOT_PRICE = 1500;
-
 export default function Bookings() {
   const [selectedDate, setSelectedDate] = useState(0);
   const [days, setDays] = useState<
@@ -251,15 +249,12 @@ export default function Bookings() {
       return;
     }
 
-    if (
-      phoneNumber.length !== 10 ||
-      !/^\d+$/.test(phoneNumber)
-    ) {
+    if (!/^07\d{8}$/.test(phoneNumber)) {
       setPageAlert({
         visible: true,
         variant: "error",
         title: "Invalid Phone Number",
-        description: "Please enter a valid 10-digit phone number.",
+        description: "Please enter a valid phone number starting with 07 and containing 10 digits.",
       });
       return;
     }
@@ -303,7 +298,15 @@ export default function Bookings() {
     }
   };
 
-  const totalAmount = totalSlots * SLOT_PRICE;
+  const selectedSlotDetails = Object.entries(selectedSlots).flatMap(
+    ([courtId, slotIds]) =>
+      (courtSlots[courtId] || []).filter((slot) => slotIds.includes(slot.id))
+  );
+
+  const totalAmount = selectedSlotDetails.reduce(
+    (sum, slot) => sum + Number(slot.price),
+    0
+  );
   const hasSelection = totalSlots > 0;
 
   const bookingSummary = courts
@@ -448,8 +451,12 @@ export default function Bookings() {
                 </div>
 
                 <button
-                  onClick={() => setIsBookingModalOpen(false)}
-                  className="p-2 rounded-full hover:bg-gray-100"
+                  onClick={() => {
+                    setIsBookingModalOpen(false)
+                    setSelectedSlots({})
+                    handleGetSlotsAvailability(days[selectedDate].date)
+                  }}
+                  className="p-2 rounded-full cursor-pointer hover:bg-gray-100"
                 >
                   <X size={18} />
                 </button>
@@ -482,8 +489,13 @@ export default function Bookings() {
                       </label>
 
                       <input
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) =>
+                          setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
+                        }
                         className="mt-1 w-full rounded-lg border px-3 py-2 outline-none focus:border-amber-500"
                       />
 
@@ -732,7 +744,11 @@ export default function Bookings() {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Rate</span>
 
-                      <span>Rs. {SLOT_PRICE.toLocaleString()}</span>
+                      <span>
+                        Rs. {totalSlots > 0
+                          ? (totalAmount / totalSlots).toLocaleString()
+                          : "0"}
+                      </span>
                     </div>
                   </div>
 
